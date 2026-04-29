@@ -1,0 +1,1187 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triqui Challenge</title>
+  <style>
+    :root {
+      --bg: #95d7d7;
+      --panel: #9af0e4;
+      --line: #1738b6;
+      --accent: #39db53;
+      --text: #1f1f1f;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #dcdcdc;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 14px;
+    }
+    .phone {
+      position: relative;
+      width: 360px;
+      min-height: 740px;
+      background: var(--bg);
+      border: 2px solid #1b1b1b;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+    .topbar {
+      height: 28px;
+      background: #2f48c5;
+    }
+    .screen {
+      display: none;
+      padding: 14px 10px 18px;
+      min-height: 712px;
+    }
+    .screen.active {
+      display: block;
+    }
+    .panel {
+      border: 2px solid #111;
+      background: var(--panel);
+      padding: 10px;
+      margin-bottom: 14px;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .menu-col {
+      border: 2px solid #111;
+      background: #b6ffe2;
+      padding: 8px;
+      display: grid;
+      gap: 10px;
+    }
+    .cat-btn {
+      border: 1px solid #2a2a2a;
+      background: #95f0ea;
+      font-size: 14px;
+      text-transform: uppercase;
+      padding: 6px 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cat-btn.selected {
+      border: 2px solid #1738b6;
+      background: #d7fffb;
+      font-weight: 700;
+    }
+    .cat-btn span {
+      display: inline-grid;
+      place-items: center;
+      min-width: 38px;
+      height: 26px;
+      background: linear-gradient(90deg, #ff4b4b, #66a9ff);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+    }
+    .cat-btn:nth-child(2n) span {
+      background: linear-gradient(90deg, #6ac0ff, #937bff);
+    }
+    .cat-btn:nth-child(3n) span {
+      background: linear-gradient(90deg, #f8d95d, #94df5f);
+    }
+    .main-btn {
+      min-width: 120px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #1b7f2e;
+      background: var(--accent);
+      font-size: 20px;
+      cursor: pointer;
+      margin: 8px auto 0;
+      display: block;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    label {
+      font-size: 28px;
+      color: #2f2f2f;
+    }
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #6f6f6f;
+      background: #e7e7e7;
+      font-size: 22px;
+      padding: 4px 8px;
+    }
+    .score-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .score-box {
+      border: 1px solid #3b3b3b;
+      background: #c0f3d5;
+      padding: 6px;
+      text-align: center;
+    }
+    .score-name {
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .score-value {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .category-text {
+      text-align: center;
+      font-size: 20px;
+      margin: 2px 0 0;
+    }
+    #status {
+      text-align: center;
+      font-size: 30px;
+      margin: 8px 0 10px;
+      color: #2f2f2f;
+      min-height: 62px;
+      display: grid;
+      place-items: center;
+    }
+    .board-wrap {
+      display: grid;
+      place-items: center;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 92px);
+      grid-template-rows: repeat(3, 92px);
+      border: 4px solid var(--line);
+      background: #b4ffff;
+    }
+    .cell {
+      border: 2px solid var(--line);
+      background: #cbffff;
+      color: #111;
+      font-size: 62px;
+      line-height: 1;
+      cursor: pointer;
+      font-family: "Segoe UI", sans-serif;
+      transition: transform 0.08s ease;
+    }
+    .cell:active {
+      transform: scale(0.96);
+    }
+    .cell.win {
+      background: #ffe788;
+    }
+    .controls {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .controls button {
+      border: 1px solid #2a5d2a;
+      background: #b6efb4;
+      font-size: 18px;
+      padding: 8px 4px;
+      cursor: pointer;
+    }
+    .controls button.primary {
+      background: var(--accent);
+      border-color: #1b7f2e;
+      font-weight: 600;
+    }
+    .question-overlay {
+      position: absolute;
+      inset: 28px 0 0 0;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 14px;
+      z-index: 20;
+    }
+    .question-overlay.active {
+      display: grid;
+    }
+    .question-card {
+      width: 100%;
+      max-width: 330px;
+      border: 2px solid #111;
+      background: #b7fff2;
+      padding: 10px;
+    }
+    .question-category {
+      font-weight: 700;
+      color: #1738b6;
+      font-size: 16px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    #questionText {
+      margin: 0 0 10px;
+      font-size: 21px;
+      line-height: 1.2;
+    }
+    .options-container {
+      display: grid;
+      gap: 8px;
+    }
+    .option-btn {
+      border: 1px solid #2a2a2a;
+      background: #e9fff5;
+      font-size: 16px;
+      text-align: left;
+      padding: 9px 10px;
+      cursor: pointer;
+    }
+    .option-btn:hover {
+      background: #d6f5ff;
+    }
+    .answer-feedback {
+      position: absolute;
+      inset: 28px 0 0 0;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 14px;
+      z-index: 25;
+    }
+    .answer-feedback.active {
+      display: grid;
+    }
+    .answer-card {
+      width: 90%;
+      max-width: 300px;
+      border: 2px solid #111;
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      padding: 24px 12px;
+      color: #132;
+    }
+    .answer-card.correct {
+      background: #98ff95;
+    }
+    .answer-card.wrong {
+      background: #ffb2b2;
+      color: #501;
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <div class="topbar"></div>
+
+    <section id="menuScreen" class="screen active">
+      <div class="panel">
+        <div class="menu-grid">
+          <div class="menu-col">
+            <button class="cat-btn selected" data-category="historia">Historia <span>📜</span></button>
+            <button class="cat-btn" data-category="deportes">Deportes <span>🏋️</span></button>
+            <button class="cat-btn" data-category="entretenimiento">Entretenimiento <span>🎪</span></button>
+          </div>
+          <div class="menu-col">
+            <button class="cat-btn" data-category="ciencias">Ciencias <span>🧪</span></button>
+            <button class="cat-btn" data-category="geografia">Geografía <span>🌍</span></button>
+            <button class="cat-btn" data-category="random">Random <span>❓</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="text-align: center;">
+        <button id="continueBtn" class="main-btn">Continuar</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="panel">
+        <div class="form-row">
+          <label for="player1">Jugador 1</label>
+          <input id="player1" type="text" value="Jugador 1" maxlength="12" />
+        </div>
+        <div class="form-row">
+          <label for="player2">Jugador 2</label>
+          <input id="player2" type="text" value="Jugador 2" maxlength="12" />
+        </div>
+        <div class="score-panel">
+          <div class="score-box">
+            <div id="scoreNameX" class="score-name">Jugador 1 (X)</div>
+            <div id="scoreX" class="score-value">0</div>
+          </div>
+          <div class="score-box">
+            <div id="scoreNameO" class="score-name">Jugador 2 (O)</div>
+            <div id="scoreO" class="score-value">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <p class="category-text">Categorías seleccionadas: <strong id="selectedCategoryLabel">Historia</strong></p>
+      </div>
+
+      <h2 id="status">Pulsa para Empezar</h2>
+
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="Tablero de triqui">
+          <button class="cell" data-index="0" aria-label="Casilla 1"></button>
+          <button class="cell" data-index="1" aria-label="Casilla 2"></button>
+          <button class="cell" data-index="2" aria-label="Casilla 3"></button>
+          <button class="cell" data-index="3" aria-label="Casilla 4"></button>
+          <button class="cell" data-index="4" aria-label="Casilla 5"></button>
+          <button class="cell" data-index="5" aria-label="Casilla 6"></button>
+          <button class="cell" data-index="6" aria-label="Casilla 7"></button>
+          <button class="cell" data-index="7" aria-label="Casilla 8"></button>
+          <button class="cell" data-index="8" aria-label="Casilla 9"></button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="primary">Iniciar</button>
+        <button id="nextRoundBtn">Otra ronda</button>
+        <button id="newGameBtn">Nuevo juego</button>
+      </div>
+    </section>
+
+    <div id="questionOverlay" class="question-overlay" aria-live="polite">
+      <div class="question-card">
+        <div id="questionCategory" class="question-category">Categoría: Historia</div>
+        <p id="questionText"></p>
+        <div id="optionsContainer" class="options-container"></div>
+      </div>
+    </div>
+    <div id="answerFeedback" class="answer-feedback" aria-live="polite">
+      <div id="answerCard" class="answer-card">¡Correcto!</div>
+    </div>
+  </main>
+
+  <script>
+    const menuScreen = document.getElementById("menuScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const continueBtn = document.getElementById("continueBtn");
+    const categoryButtons = Array.from(document.querySelectorAll(".cat-btn"));
+
+    const player1Input = document.getElementById("player1");
+    const player2Input = document.getElementById("player2");
+    const scoreNameX = document.getElementById("scoreNameX");
+    const scoreNameO = document.getElementById("scoreNameO");
+    const scoreXEl = document.getElementById("scoreX");
+    const scoreOEl = document.getElementById("scoreO");
+    const selectedCategoryLabel = document.getElementById("selectedCategoryLabel");
+    const statusEl = document.getElementById("status");
+
+    const startBtn = document.getElementById("startBtn");
+    const nextRoundBtn = document.getElementById("nextRoundBtn");
+    const newGameBtn = document.getElementById("newGameBtn");
+    const cells = Array.from(document.querySelectorAll(".cell"));
+
+    const questionOverlay = document.getElementById("questionOverlay");
+    const questionCategoryEl = document.getElementById("questionCategory");
+    const questionTextEl = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const answerFeedback = document.getElementById("answerFeedback");
+    const answerCard = document.getElementById("answerCard");
+
+    const patterns = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    const categoryLabels = {
+      historia: "Historia",
+      deportes: "Deportes",
+      ciencias: "Ciencias",
+      geografia: "Geografía",
+      entretenimiento: "Entretenimiento",
+      random: "Random"
+    };
+
+    const baseCategories = ["historia", "deportes", "ciencias", "geografia", "entretenimiento"];
+
+    const questionBank = {
+      historia: [
+        {
+          text: "¿En qué año llegó Cristóbal Colón a América?",
+          options: ["1492", "1521", "1453", "1810"],
+          answer: 0
+        },
+        {
+          text: "¿Quién fue el primer presidente de Estados Unidos?",
+          options: ["Abraham Lincoln", "George Washington", "Thomas Jefferson", "John Adams"],
+          answer: 1
+        },
+        {
+          text: "¿Qué civilización construyó Machu Picchu?",
+          options: ["Maya", "Azteca", "Inca", "Romana"],
+          answer: 2
+        },
+        {
+          text: "¿En qué país comenzó la Revolución Francesa?",
+          options: ["Francia", "Inglaterra", "Alemania", "Italia"],
+          answer: 0
+        },
+        {
+          text: "¿Qué muro cayó en 1989 y marcó un cambio en Europa?",
+          options: ["Muro de Adriano", "Muro de los Lamentos", "Muro de Berlín", "Gran Muralla China"],
+          answer: 2
+        },
+        {
+          text: "¿Quién lideró la independencia de la India con la no violencia?",
+          options: ["Nelson Mandela", "Mahatma Gandhi", "Simón Bolívar", "Winston Churchill"],
+          answer: 1
+        },
+        {
+          text: "¿Qué imperio construyó el Coliseo de Roma?",
+          options: ["Griego", "Romano", "Otomano", "Persa"],
+          answer: 1
+        },
+        {
+          text: "¿Qué conflicto ocurrió entre 1914 y 1918?",
+          options: ["Segunda Guerra Mundial", "Guerra Fría", "Primera Guerra Mundial", "Guerra de Crimea"],
+          answer: 2
+        },
+        {
+          text: "¿Quién fue conocido como el Libertador en Sudamérica?",
+          options: ["José de San Martín", "Simón Bolívar", "Antonio José de Sucre", "Bernardo O'Higgins"],
+          answer: 1
+        },
+        {
+          text: "¿En qué país se originaron los Juegos Olímpicos antiguos?",
+          options: ["Italia", "Turquía", "Grecia", "Egipto"],
+          answer: 2
+        },
+        {
+          text: "¿Quién redactó gran parte de la Declaración de Independencia de EE.UU.?",
+          options: ["George Washington", "Thomas Jefferson", "Benjamin Franklin", "James Madison"],
+          answer: 1
+        },
+        {
+          text: "¿En qué año cayó el Imperio romano de Occidente?",
+          options: ["330", "410", "476", "622"],
+          answer: 2
+        },
+        {
+          text: "¿Qué faraón está asociado con la Gran Pirámide de Guiza?",
+          options: ["Ramsés II", "Tutankamón", "Akenatón", "Keops"],
+          answer: 3
+        },
+        {
+          text: "¿Qué ciudad fue sepultada por la erupción del Vesubio en el 79 d.C.?",
+          options: ["Atenas", "Pompeya", "Cartago", "Troya"],
+          answer: 1
+        },
+        {
+          text: "¿Qué tratado puso fin oficialmente a la Primera Guerra Mundial?",
+          options: ["Tratado de Tordesillas", "Tratado de París", "Tratado de Versalles", "Tratado de Utrecht"],
+          answer: 2
+        },
+        {
+          text: "¿Qué reina egipcia tuvo alianzas con Julio César y Marco Antonio?",
+          options: ["Nefertiti", "Cleopatra", "Hatshepsut", "Sobekneferu"],
+          answer: 1
+        },
+        {
+          text: "¿Qué civilización mesoamericana destacó por su calendario astronómico?",
+          options: ["Maya", "Inca", "Olmeca", "Fenicia"],
+          answer: 0
+        },
+        {
+          text: "¿En qué país comenzó la Revolución Industrial?",
+          options: ["Francia", "Alemania", "Reino Unido", "Estados Unidos"],
+          answer: 2
+        },
+        {
+          text: "¿Qué expedición completó la primera vuelta al mundo?",
+          options: ["Cook", "Magallanes-Elcano", "Colón", "Vasco da Gama"],
+          answer: 1
+        },
+        {
+          text: "¿En qué año cayó Tenochtitlán?",
+          options: ["1492", "1519", "1521", "1533"],
+          answer: 2
+        }
+      ],
+      deportes: [
+        {
+          text: "¿Cuántos jugadores por equipo hay en cancha en fútbol?",
+          options: ["9", "10", "11", "12"],
+          answer: 2
+        },
+        {
+          text: "¿Qué país ganó el Mundial de fútbol 2010?",
+          options: ["Brasil", "España", "Alemania", "Argentina"],
+          answer: 1
+        },
+        {
+          text: "¿Cuánto dura un partido de baloncesto FIBA?",
+          options: ["32 minutos", "36 minutos", "40 minutos", "48 minutos"],
+          answer: 2
+        },
+        {
+          text: "¿En qué deporte es común el término birdie?",
+          options: ["Golf", "Tenis", "Natación", "Atletismo"],
+          answer: 0
+        },
+        {
+          text: "¿Cuántos sets se necesitan para ganar un partido de voleibol?",
+          options: ["2", "3", "4", "5"],
+          answer: 1
+        },
+        {
+          text: "¿Quién es conocido por dominar los 100m planos olímpicos?",
+          options: ["Carl Lewis", "Usain Bolt", "Mo Farah", "Noah Lyles"],
+          answer: 1
+        },
+        {
+          text: "¿Cuántos puntos vale un triple en baloncesto?",
+          options: ["1", "2", "3", "4"],
+          answer: 2
+        },
+        {
+          text: "¿En qué deporte compiten en Wimbledon?",
+          options: ["Golf", "Fórmula 1", "Tenis", "Béisbol"],
+          answer: 2
+        },
+        {
+          text: "¿Qué selección es conocida como la Canarinha?",
+          options: ["Argentina", "Brasil", "Uruguay", "Chile"],
+          answer: 1
+        },
+        {
+          text: "¿Cuántos jugadores titulares tiene un equipo de baloncesto?",
+          options: ["4", "5", "6", "7"],
+          answer: 1
+        },
+        {
+          text: "¿Cuántos hoyos tiene una ronda estándar de golf?",
+          options: ["9", "12", "18", "24"],
+          answer: 2
+        },
+        {
+          text: "¿En qué deporte se usa un volante (shuttlecock)?",
+          options: ["Tenis", "Bádminton", "Squash", "Ping-pong"],
+          answer: 1
+        },
+        {
+          text: "¿En qué país se celebra tradicionalmente el Tour de Francia?",
+          options: ["Italia", "España", "Francia", "Bélgica"],
+          answer: 2
+        },
+        {
+          text: "¿Cuántos periodos tiene un partido de hockey sobre hielo?",
+          options: ["2", "3", "4", "5"],
+          answer: 1
+        },
+        {
+          text: "¿En qué deporte compite Rafael Nadal?",
+          options: ["Ciclismo", "Natación", "Tenis", "Atletismo"],
+          answer: 2
+        },
+        {
+          text: "¿Cuántos anillos tiene el símbolo olímpico?",
+          options: ["4", "5", "6", "7"],
+          answer: 1
+        },
+        {
+          text: "¿En qué deporte se realiza un mate?",
+          options: ["Béisbol", "Baloncesto", "Voleibol", "Rugby"],
+          answer: 1
+        },
+        {
+          text: "¿Qué selección ganó el Mundial de fútbol 2014?",
+          options: ["España", "Argentina", "Brasil", "Alemania"],
+          answer: 3
+        },
+        {
+          text: "¿Cuál es la distancia oficial de una maratón?",
+          options: ["40 km", "41 km", "42,195 km", "45 km"],
+          answer: 2
+        },
+        {
+          text: "¿Cuántos jugadores hay por equipo en un partido oficial de voleibol en cancha?",
+          options: ["5", "6", "7", "8"],
+          answer: 1
+        }
+      ],
+      ciencias: [
+        {
+          text: "¿Cuál es el planeta más grande del sistema solar?",
+          options: ["Saturno", "Júpiter", "Neptuno", "Marte"],
+          answer: 1
+        },
+        {
+          text: "¿Cuál es el gas más abundante en la atmósfera terrestre?",
+          options: ["Oxígeno", "Dióxido de carbono", "Nitrógeno", "Helio"],
+          answer: 2
+        },
+        {
+          text: "¿Qué partícula tiene carga negativa?",
+          options: ["Protón", "Neutrón", "Electrón", "Fotón"],
+          answer: 2
+        },
+        {
+          text: "¿Cuál es la fórmula química del agua?",
+          options: ["CO2", "H2O", "NaCl", "O2"],
+          answer: 1
+        },
+        {
+          text: "¿Qué órgano bombea la sangre en el cuerpo humano?",
+          options: ["Pulmón", "Hígado", "Riñón", "Corazón"],
+          answer: 3
+        },
+        {
+          text: "¿Qué fuerza mantiene a los planetas en órbita?",
+          options: ["Fricción", "Gravedad", "Magnetismo", "Energía nuclear"],
+          answer: 1
+        },
+        {
+          text: "¿Qué planeta es conocido como el planeta rojo?",
+          options: ["Venus", "Marte", "Júpiter", "Mercurio"],
+          answer: 1
+        },
+        {
+          text: "¿Qué unidad mide la corriente eléctrica?",
+          options: ["Voltio", "Ohmio", "Amperio", "Julio"],
+          answer: 2
+        },
+        {
+          text: "¿Qué científico propuso la teoría de la relatividad?",
+          options: ["Isaac Newton", "Albert Einstein", "Galileo Galilei", "Nikola Tesla"],
+          answer: 1
+        },
+        {
+          text: "¿Qué órganos se encargan principalmente de filtrar la sangre?",
+          options: ["Pulmones", "Riñones", "Intestinos", "Páncreas"],
+          answer: 1
+        },
+        {
+          text: "¿Qué tipo de energía proviene directamente del Sol?",
+          options: ["Eólica", "Hidráulica", "Solar", "Geotérmica"],
+          answer: 2
+        },
+        {
+          text: "¿Qué elemento químico tiene el símbolo Au?",
+          options: ["Plata", "Oro", "Aluminio", "Argón"],
+          answer: 1
+        },
+        {
+          text: "¿Qué estado de la materia no tiene forma ni volumen fijos?",
+          options: ["Sólido", "Líquido", "Plasma", "Gas"],
+          answer: 3
+        },
+        {
+          text: "¿Cuántos cromosomas tiene normalmente una célula humana?",
+          options: ["23", "44", "46", "48"],
+          answer: 2
+        },
+        {
+          text: "¿Qué órgano coordina pensamiento y memoria?",
+          options: ["Cerebro", "Corazón", "Hígado", "Estómago"],
+          answer: 0
+        },
+        {
+          text: "¿Qué vitamina se sintetiza con ayuda de la luz solar?",
+          options: ["Vitamina A", "Vitamina C", "Vitamina D", "Vitamina K"],
+          answer: 2
+        },
+        {
+          text: "¿Qué capa atmosférica ayuda a bloquear la radiación UV?",
+          options: ["Troposfera", "Ionosfera", "Capa de ozono", "Exosfera"],
+          answer: 2
+        },
+        {
+          text: "¿Cuál es la velocidad aproximada de la luz en el vacío?",
+          options: ["150.000 km/s", "300.000 km/s", "30.000 km/s", "3.000 km/s"],
+          answer: 1
+        },
+        {
+          text: "¿Qué instrumento se usa para medir temperatura?",
+          options: ["Barómetro", "Termómetro", "Higrómetro", "Anemómetro"],
+          answer: 1
+        },
+        {
+          text: "¿Cuál es el pH aproximado de una solución neutra?",
+          options: ["5", "6", "7", "8"],
+          answer: 2
+        }
+      ],
+      geografia: [
+        {
+          text: "¿Cuál es la capital de Japón?",
+          options: ["Seúl", "Beijing", "Tokio", "Bangkok"],
+          answer: 2
+        },
+        {
+          text: "¿En qué continente está Egipto?",
+          options: ["Asia", "África", "Europa", "Oceanía"],
+          answer: 1
+        },
+        {
+          text: "¿Qué océano baña la costa occidental de Colombia?",
+          options: ["Atlántico", "Índico", "Ártico", "Pacífico"],
+          answer: 3
+        },
+        {
+          text: "¿Qué país europeo tiene forma de bota?",
+          options: ["Grecia", "Portugal", "Italia", "Croacia"],
+          answer: 2
+        },
+        {
+          text: "¿Cuál es la montaña más alta del mundo sobre el nivel del mar?",
+          options: ["K2", "Everest", "Aconcagua", "Kilimanjaro"],
+          answer: 1
+        },
+        {
+          text: "¿Cuál es el río más caudaloso del mundo?",
+          options: ["Nilo", "Yangtsé", "Amazonas", "Misisipi"],
+          answer: 2
+        },
+        {
+          text: "¿Cuál es la capital de Canadá?",
+          options: ["Toronto", "Ottawa", "Montreal", "Vancouver"],
+          answer: 1
+        },
+        {
+          text: "¿Cuál es el desierto cálido más grande del mundo?",
+          options: ["Sahara", "Gobi", "Kalahari", "Atacama"],
+          answer: 0
+        },
+        {
+          text: "¿Cuál es el país más grande por superficie?",
+          options: ["Canadá", "Rusia", "China", "Estados Unidos"],
+          answer: 1
+        },
+        {
+          text: "¿Qué cordillera atraviesa gran parte de Sudamérica?",
+          options: ["Alpes", "Andes", "Himalaya", "Pirineos"],
+          answer: 1
+        },
+        {
+          text: "¿Cuál es la capital de Australia?",
+          options: ["Sídney", "Melbourne", "Canberra", "Perth"],
+          answer: 2
+        },
+        {
+          text: "¿Qué país limita con Colombia por el istmo de Panamá?",
+          options: ["Costa Rica", "Venezuela", "Panamá", "Ecuador"],
+          answer: 2
+        },
+        {
+          text: "¿Qué mar separa Europa y África?",
+          options: ["Mar del Norte", "Mar Mediterráneo", "Mar Báltico", "Mar Negro"],
+          answer: 1
+        },
+        {
+          text: "¿En qué continente se encuentra Perú?",
+          options: ["Europa", "África", "América del Sur", "Oceanía"],
+          answer: 2
+        },
+        {
+          text: "¿Cuál es la capital de Argentina?",
+          options: ["Santiago", "Montevideo", "Lima", "Buenos Aires"],
+          answer: 3
+        },
+        {
+          text: "¿Cuál es el país más poblado de África?",
+          options: ["Egipto", "Sudáfrica", "Nigeria", "Argelia"],
+          answer: 2
+        },
+        {
+          text: "¿Cuál es la isla más grande del mundo?",
+          options: ["Madagascar", "Groenlandia", "Borneo", "Nueva Guinea"],
+          answer: 1
+        },
+        {
+          text: "¿Cuál es el lago de agua dulce más grande por superficie?",
+          options: ["Lago Victoria", "Lago Superior", "Lago Baikal", "Lago Tanganica"],
+          answer: 1
+        },
+        {
+          text: "¿Qué país tiene como capital a Lisboa?",
+          options: ["España", "Portugal", "Italia", "Grecia"],
+          answer: 1
+        },
+        {
+          text: "¿Qué lugar es conocido por ser uno de los puntos más bajos de la superficie terrestre?",
+          options: ["Mar Muerto", "Monte Everest", "Gran Cañón", "Lago Titicaca"],
+          answer: 0
+        }
+      ],
+      entretenimiento: [
+        {
+          text: "¿Cómo se llama el mago protagonista de Hogwarts?",
+          options: ["Harry Potter", "Frodo Bolsón", "Percy Jackson", "Newt Scamander"],
+          answer: 0
+        },
+        {
+          text: "¿Qué saga incluye a Luke Skywalker?",
+          options: ["Star Trek", "Star Wars", "Dune", "Matrix"],
+          answer: 1
+        },
+        {
+          text: "¿Qué película animada tiene a Simba como personaje principal?",
+          options: ["Shrek", "Madagascar", "El Rey León", "Mulan"],
+          answer: 2
+        },
+        {
+          text: "¿Qué instrumento suele tener 88 teclas?",
+          options: ["Violín", "Piano", "Flauta", "Guitarra"],
+          answer: 1
+        },
+        {
+          text: "¿Qué plataforma es conocida por videos cortos virales?",
+          options: ["Wikipedia", "TikTok", "Dropbox", "Reddit"],
+          answer: 1
+        },
+        {
+          text: "¿Quién canta la canción Billie Jean?",
+          options: ["Michael Jackson", "Bruno Mars", "Freddie Mercury", "Ed Sheeran"],
+          answer: 0
+        },
+        {
+          text: "¿Qué superhéroe es conocido como el Hombre Murciélago?",
+          options: ["Superman", "Batman", "Iron Man", "Flash"],
+          answer: 1
+        },
+        {
+          text: "¿Qué serie tiene al personaje Walter White?",
+          options: ["Breaking Bad", "Friends", "Dark", "Sherlock"],
+          answer: 0
+        },
+        {
+          text: "¿Qué banda lanzó la canción Bohemian Rhapsody?",
+          options: ["The Beatles", "Queen", "Coldplay", "Nirvana"],
+          answer: 1
+        },
+        {
+          text: "¿Cómo se llama la princesa que suele ser rescatada por Mario?",
+          options: ["Zelda", "Peach", "Samus", "Daisy"],
+          answer: 1
+        },
+        {
+          text: "¿Qué actor interpretó a Jack en Titanic?",
+          options: ["Brad Pitt", "Tom Cruise", "Leonardo DiCaprio", "Johnny Depp"],
+          answer: 2
+        },
+        {
+          text: "¿Qué saga de videojuegos incluye a Link y Zelda?",
+          options: ["Final Fantasy", "The Legend of Zelda", "Halo", "Metroid"],
+          answer: 1
+        },
+        {
+          text: "¿Qué cantante es conocida como la Reina del Pop?",
+          options: ["Madonna", "Shakira", "Adele", "Rihanna"],
+          answer: 0
+        },
+        {
+          text: "¿Qué película ganó el Óscar a mejor película en 2020?",
+          options: ["1917", "Joker", "Parásitos", "Ford v Ferrari"],
+          answer: 2
+        },
+        {
+          text: "¿Cómo se conoce el universo cinematográfico de Marvel?",
+          options: ["MCU", "DCEU", "UCMX", "MVU"],
+          answer: 0
+        },
+        {
+          text: "¿Qué grupo surcoreano lanzó la canción Dynamite?",
+          options: ["BLACKPINK", "EXO", "BTS", "TXT"],
+          answer: 2
+        },
+        {
+          text: "¿Quién dirigió la trilogía de El Señor de los Anillos?",
+          options: ["James Cameron", "Peter Jackson", "Christopher Nolan", "Ridley Scott"],
+          answer: 1
+        },
+        {
+          text: "¿Qué serie animada transcurre en Springfield con una familia amarilla?",
+          options: ["Family Guy", "Los Simpson", "Futurama", "South Park"],
+          answer: 1
+        },
+        {
+          text: "¿Qué red social es conocida por fotos, historias y reels?",
+          options: ["LinkedIn", "Instagram", "X", "Pinterest"],
+          answer: 1
+        },
+        {
+          text: "¿Cómo se llama el Hechicero Supremo de Marvel?",
+          options: ["Loki", "Doctor Strange", "Vision", "Hawkeye"],
+          answer: 1
+        }
+      ]
+    };
+
+    const names = { X: "Jugador 1", O: "Jugador 2" };
+    const scores = { X: 0, O: 0 };
+    const usedQuestions = {
+      historia: new Set(),
+      deportes: new Set(),
+      ciencias: new Set(),
+      geografia: new Set(),
+      entretenimiento: new Set()
+    };
+    let board = Array(9).fill("");
+    let active = false;
+    let current = "X";
+    const selectedCategories = new Set(["historia"]);
+    let questionOpen = false;
+    let pendingMoveIndex = null;
+    let activeQuestion = null;
+
+    function syncNames() {
+      names.X = player1Input.value.trim() || "Jugador 1";
+      names.O = player2Input.value.trim() || "Jugador 2";
+      scoreNameX.textContent = `${names.X} (X)`;
+      scoreNameO.textContent = `${names.O} (O)`;
+    }
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    function updateScores() {
+      scoreXEl.textContent = String(scores.X);
+      scoreOEl.textContent = String(scores.O);
+    }
+
+    function clearWinMarks() {
+      cells.forEach((cell) => cell.classList.remove("win"));
+    }
+
+    function render() {
+      cells.forEach((cell, index) => {
+        cell.textContent = board[index];
+        cell.disabled = !active || board[index] !== "" || questionOpen;
+      });
+    }
+    function toggleCategory(category) {
+      if (selectedCategories.has(category)) {
+        if (selectedCategories.size === 1) return;
+        selectedCategories.delete(category);
+      } else {
+        selectedCategories.add(category);
+      }
+      updateSelectedCategoriesUI();
+    }
+
+    function getWinnerPattern() {
+      for (const pattern of patterns) {
+        const [a, b, c] = pattern;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          return pattern;
+        }
+      }
+      return null;
+    }
+    function updateSelectedCategoriesUI() {
+      const selectedList = Array.from(selectedCategories);
+      selectedCategoryLabel.textContent = selectedList
+        .map((category) => categoryLabels[category])
+        .join(", ");
+      categoryButtons.forEach((button) => {
+        button.classList.toggle("selected", selectedCategories.has(button.dataset.category));
+      });
+    }
+
+    function resetQuestionHistory() {
+      baseCategories.forEach((category) => usedQuestions[category].clear());
+    }
+
+    function getQuestionCategories() {
+      return selectedCategories.has("random") ? baseCategories : Array.from(selectedCategories);
+    }
+    function hasAvailableQuestions() {
+      const categories = getQuestionCategories();
+      return categories.some((category) => usedQuestions[category].size < questionBank[category].length);
+    }
+
+    function getRandomQuestion() {
+      const categories = getQuestionCategories();
+      let candidates = [];
+
+      categories.forEach((category) => {
+        questionBank[category].forEach((question, index) => {
+          if (!usedQuestions[category].has(index)) {
+            candidates.push({ ...question, category, index });
+          }
+        });
+      });
+
+      if (candidates.length === 0) return null;
+
+      const randomIndex = Math.floor(Math.random() * candidates.length);
+      const chosen = candidates[randomIndex];
+      usedQuestions[chosen.category].add(chosen.index);
+      return chosen;
+    }
+
+    function hideQuestionOverlay() {
+      questionOverlay.classList.remove("active");
+      questionOpen = false;
+      activeQuestion = null;
+      optionsContainer.innerHTML = "";
+    }
+
+    function showQuestionForCell(index) {
+      pendingMoveIndex = index;
+      activeQuestion = getRandomQuestion();
+      if (!activeQuestion) {
+        pendingMoveIndex = null;
+        active = false;
+        setStatus("No quedan preguntas disponibles. Pulsa Nuevo juego.");
+        render();
+        return;
+      }
+      questionOpen = true;
+
+      questionCategoryEl.textContent = `Categoría: ${categoryLabels[activeQuestion.category]}`;
+      questionTextEl.textContent = activeQuestion.text;
+      optionsContainer.innerHTML = "";
+
+      activeQuestion.options.forEach((option, optionIndex) => {
+        const optionButton = document.createElement("button");
+        optionButton.className = "option-btn";
+        optionButton.type = "button";
+        optionButton.textContent = option;
+        optionButton.addEventListener("click", () => handleAnswer(optionIndex));
+        optionsContainer.appendChild(optionButton);
+      });
+
+      questionOverlay.classList.add("active");
+      setStatus(`Pregunta para ${names[current]} (${current})`);
+      render();
+    }
+
+    function resolveCorrectAnswer(moveIndex) {
+      board[moveIndex] = current;
+      const winnerPattern = getWinnerPattern();
+
+      if (winnerPattern) {
+        winnerPattern.forEach((cellIndex) => cells[cellIndex].classList.add("win"));
+        scores[current] += 1;
+        updateScores();
+        finishRound(`¡${names[current]} gana!`);
+        return;
+      }
+
+      if (board.every(Boolean)) {
+        finishRound("Empate");
+        return;
+      }
+
+      current = current === "X" ? "O" : "X";
+      setStatus(`Correcto. Turno de ${names[current]} (${current})`);
+      render();
+    }
+
+    function resolveWrongAnswer() {
+      current = current === "X" ? "O" : "X";
+      setStatus(`Incorrecto. Turno de ${names[current]} (${current})`);
+      render();
+    }
+
+    function handleAnswer(optionIndex) {
+      if (!questionOpen || !activeQuestion || pendingMoveIndex === null) return;
+
+      const moveIndex = pendingMoveIndex;
+      const isCorrect = optionIndex === activeQuestion.answer;
+
+      pendingMoveIndex = null;
+      hideQuestionOverlay();
+
+      if (!active) return;
+      if (isCorrect) {
+        resolveCorrectAnswer(moveIndex);
+      } else {
+        resolveWrongAnswer();
+      }
+    }
+
+    function beginRound() {
+      syncNames();
+      board = Array(9).fill("");
+      clearWinMarks();
+      pendingMoveIndex = null;
+      hideQuestionOverlay();
+      if (!hasAvailableQuestions()) {
+        active = false;
+        setStatus("No quedan preguntas disponibles. Pulsa Nuevo juego.");
+        render();
+        return;
+      }
+      active = true;
+      current = Math.random() < 0.5 ? "X" : "O";
+      setStatus(`Turno de ${names[current]} (${current})`);
+      render();
+    }
+
+    function finishRound(message) {
+      active = false;
+      setStatus(message);
+      render();
+    }
+
+    function onCellClick(index) {
+      if (!active || board[index] || questionOpen) return;
+      showQuestionForCell(index);
+    }
+
+    continueBtn.addEventListener("click", () => {
+      menuScreen.classList.remove("active");
+      gameScreen.classList.add("active");
+      setStatus("Pulsa Iniciar");
+    });
+    categoryButtons.forEach((button) => {
+      button.addEventListener("click", () => toggleCategory(button.dataset.category));
+    });
+
+    cells.forEach((cell, index) => {
+      cell.addEventListener("click", () => onCellClick(index));
+    });
+
+    player1Input.addEventListener("input", syncNames);
+    player2Input.addEventListener("input", syncNames);
+
+    startBtn.addEventListener("click", beginRound);
+    nextRoundBtn.addEventListener("click", beginRound);
+    newGameBtn.addEventListener("click", () => {
+      scores.X = 0;
+      scores.O = 0;
+      resetQuestionHistory();
+      updateScores();
+      board = Array(9).fill("");
+      clearWinMarks();
+      pendingMoveIndex = null;
+      hideQuestionOverlay();
+      active = false;
+      setStatus("Pulsa Iniciar");
+      render();
+      gameScreen.classList.remove("active");
+      menuScreen.classList.add("active");
+    });
+    updateSelectedCategoriesUI();
+
+    syncNames();
+    updateScores();
+    render();
+  </script>
+</body>
+</html>
